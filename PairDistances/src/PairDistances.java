@@ -123,8 +123,8 @@ public class PairDistances {
             if (line.hasOption("gaa")){
                 pd.GA_ALPHA = Double.parseDouble(line.getOptionValue("gaa"));
             }
-            if (line.hasOption("gadi")){
-                pd.GA_DELTA = Double.parseDouble(line.getOptionValue("gadi"));
+            if (line.hasOption("gad")){
+                pd.GA_DELTA = Double.parseDouble(line.getOptionValue("gad"));
             }
             if (line.hasOption("so")){
                 pd.SKIP_OVERHANG = Boolean.parseBoolean(line.getOptionValue("so"));
