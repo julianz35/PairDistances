@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class PairDistances {
 
-    private static SubstModel MODEL = new JTT();
+    private SubstModel MODEL = new JTT();
     private String INPUT_FILENAME;
     private String OUTPUT_FILENAME;
     private boolean SKIP_OVERHANG = false;
@@ -153,6 +153,7 @@ public class PairDistances {
         catch( ParseException exp ) {
             System.out.println( "Unexpected exception:" + exp.getMessage());
         }
+        pd.Run();
     }
 
 
@@ -173,7 +174,7 @@ public class PairDistances {
                 System.out.println(i);
                 EnumSeq s1 = seqs[i];
                 for (int j = 0; j <= i; j++) {
-                    Object[] result = new Object[]{0.0,0, -1000000};
+                    Object[] result;
                     EnumSeq s2 = seqs[j];
                     //Determine which sequence is longer/shorter (just for consistency)
                     EnumSeq longerSeq = s1.length() != s2.length() ? (s1.length() > s2.length() ? s1 : s2) : s1;
@@ -329,7 +330,6 @@ public class PairDistances {
 //                            temp_theta_t + "\t" +
 //                            iterations);
         if(Math.abs(gradient_t) < GA_GRADIENT_THRESHOLD  || iterations == 0){
-//            double time_orig = reverseMeanNormalise(time, START_TIME, END_TIME);
             return new Object[]{time, config, cost};
         }
         else {
