@@ -170,7 +170,7 @@ public class PairDistances {
             FileWriter writer = new FileWriter(file);
             //Write header to output
             writer.write("Seq1\tSeq2\tTime\tLogLikelihood\tConfiguration\tS1Length\tS2Length\tS1Sequence\tS2Sequence\n");
-            for (int i = 27; i < seqs.length; i++) {
+            for (int i = 0; i < seqs.length; i++) {
                 System.out.println(i);
                 EnumSeq s1 = seqs[i];
                 for (int j = 0; j <= i; j++) {
