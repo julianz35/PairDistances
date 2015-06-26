@@ -22,21 +22,38 @@ import java.util.Set;
 
 public class PairDistances {
 
+    /** Evolutionary model to use to calculate distances **/
     private SubstModel MODEL = new JTT();
+    /** Input filename for distance results **/
     private String INPUT_FILENAME;
+    /** Output filename for distance results **/
     private String OUTPUT_FILENAME;
+    /** Option to skip overhang alignment configurations**/
     private boolean SKIP_OVERHANG = false;
+    /** Minimum time value in which to a) pre-compute rate matrices from and b) initiate a search from**/
     private double START_TIME = 0.0;
+    /** Max time value in which to a) pre-compute rate matrices up to and b)
+     * initiate a search from (searches can go beyond)**/
     private double END_TIME = 1.0;
+    /** Max number of iterations in the gradient ascent search**/
     private int GA_ITER = 1000;
-    private double GA_ALPHA = 0.0001; //Constant in gradient ascent, scales
+    /** Constant in gradient ascent, scales the gradient for updating the next time value**/
+    private double GA_ALPHA = 0.0001;
+    /** Step size in gradient ascent. Currently constant (in future it may be adaptive)**/
     private double GA_DELTA = 0.01; //Step size in gradient ascent
+    /** Threshold for minimum gradient required for convergence**/
     private double GA_GRADIENT_THRESHOLD = 0.1;
+    /** Number of even time interval steps to perform a pre-scan at over the time range
+     * {@link #END_TIME} - {@link #START_TIME}**/
     private int SCAN_STEPS = 5;
+    /** Option to perform either an exhaustive scan over all time steps with pre-calculated rate matrices or
+     * to perform an optimised search **/
     private boolean EXHAUSTIVE = false;
+    /** Decimal places to round time values to, e.g., 1000 = 3 decimal places **/
+    private int ROUNDING_MULTIPLIER = 1000;
 
     private HashMap<Double, double[][] > rateMatrices = new HashMap();
-    private int ROUNDING_MULTIPLIER = 1000;
+
 
     public PairDistances(){
 
@@ -83,20 +100,23 @@ public class PairDistances {
     public static void main2(String args[]){
         //Create command line options
         Options options = new Options();
-        options.addOption("i", "Input", true, "Filename for the input fasta file");
-        options.addOption("o", "Output", true, "Filename for the results file");
-        options.addOption("st", "StartTime", false, "Time to start search from, default 0");
-        options.addOption("et", "EndTime", false, "Time to end search at, default 1");
-        options.addOption("iter", "GAIter", false, "Max number of iterations for gradient ascent, default 1000");
-        options.addOption("gaa", "GAAlpha", false, "Constant in gradient ascent function, default 0.01");
-        options.addOption("gad", "GADelta", false, "Sstep size in gradient ascent, 0.01");
-        options.addOption("so" ,"SkipOverhangs", false, "Whether or not to skip alignment configurations that create overhangs");
-        options.addOption("gat", "GATheshold", false, "Threshold for ending a gradient ascent search, default 0.1");
-        options.addOption("ps", "Prescan", false, "Number of steps/intervals in the prescan, default 5");
-        options.addOption("exhaustive", false, "Perform an exhaustive search across all times, default false");
+        options.addOption("i", "Input", true,           "Filename for the input fasta file");
+        options.addOption("o", "Output", true,          "Filename for the results file");
+        options.addOption("st", "StartTime", false,     "Time to start search from, default 0");
+        options.addOption("et", "EndTime", false,       "Time to end search at, default 1");
+        options.addOption("iter", "GAIter", false,      "Max number of iterations for gradient ascent, default 1000");
+        options.addOption("gaa", "GAAlpha", false,      "Constant in gradient ascent function, default 0.01");
+        options.addOption("gad", "GADelta", false,      "Step size in gradient ascent, 0.01");
+        options.addOption("so" ,"SkipOverhangs", false, "Whether or not to skip alignment configurations that create " +
+                "                                       overhangs");
+        options.addOption("gat", "GATheshold", false,   "Threshold for ending a gradient ascent search, default 0.1");
+        options.addOption("ps", "Prescan", false,       "Number of steps/intervals in the prescan, default 5");
+        options.addOption("exhaustive", false,          "Perform an exhaustive search across all times, default false");
         options.addOption("rm", "RoundingMulti", false, "Value for rounding time values to N decimal places, where" +
-                                    "N is the number of 0's in multiplier (must be [10,100,1000...etc], default 1000");
-        options.addOption("model", false, "Evolutionary model to use, must be [JTT,LG,Dayhoff], default is JTT");
+                                                        "N is the number of 0's in multiplier (must be [10,1000, etc]" +
+                                                        ", default 1000");
+        options.addOption("model", false,               "Evolutionary model to use, must be [JTT,LG,Dayhoff], " +
+                                                        "default is JTT");
 
         PairDistances pd = new PairDistances();
 
