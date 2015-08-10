@@ -1,9 +1,7 @@
 # PairDistances
----
 ####To Do
--complete Readme
--Provide option for output format, i.e., PHYLIP formatted distance matrix vs current tab-delimited output
----
+* complete Readme
+* Provide option for output format, i.e., PHYLIP formatted distance matrix vs current tab-delimited output
 
 PairDistances contains code for performing pairwise alignment of protein sequences. We avoid the use of an affine gap penalty by simply not inserting gaps. We find the most-likely alignment configuration and evolutionary time between each pair of sequences using a Markov Processes approach (based on the approach presented by Thorne - ``An Evolutionary model for Maximum Likelihood Alignment of DNA Sequences'').
 
