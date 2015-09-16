@@ -3,6 +3,7 @@
  *
  * Created by julianzaugg on 17/06/2015.
  */
+
 import bn.ctmc.SubstModel;
 import bn.ctmc.matrix.JTT;
 import bn.ctmc.matrix.LG;
@@ -52,74 +53,43 @@ public class PairDistances {
     /** Decimal places to round time values to, e.g., 1000 = 3 decimal places **/
     private int ROUNDING_MULTIPLIER = 1000;
 
+    /** Nth sequence to start from **/
+    private int START_SEQ = 0;
+
+    private int END_SEQ;
+
     private HashMap<Double, double[][] > rateMatrices = new HashMap();
 
 
-    public PairDistances(){
-
-    }
+    public PairDistances(){}
 
     public static void main(String args[]){
-        PairDistances pd = new PairDistances();
-
-//        String inputFastaFilename = "/Users/julianzaugg/Documents/University/Phd/Projects/Evolutionary Pathway/Data/Other/Honours_data/pos_neg_seqs_reduced.txt";
-        String inputFastaFilename = "/Users/julianzaugg/Documents/University/Phd/Projects/Evolutionary Pathway/Data/Other/Li et al/CYP102A_chim_seqs_reduced.txt";
-//        String inputFastaFilename = "/Users/julianzaugg/Documents/University/Phd/Projects/Evolutionary Pathway/" +
-//                "Results/Experimental clustering/CASTing/ANEH_mutseqs_fasta.txt";
-//        String inputFastaFilename = "/Users/julianzaugg/Documents/University/Phd/Projects/NLS/Data/Sequences/Bipartite.txt";
-//        String inputFastaFilename = "/Users/julianzaugg/Documents/University/Phd/Projects/NLS/Data/Sequences/Monopartite.txt";
-        String outputFilename = "/Users/julianzaugg/Downloads/CYP102A_chim_seqs_reduced_results27.txt";
-        Double startTime = 0.1;
-        Double endTime = 4.0;
-        Integer GAIterLimit = 1000;
-        Double GARate = 0.0001;
-        Double stepDelta = 0.001;
-        Boolean skipOverhangs = true;
-        boolean exhaustive = false;
-        double GAThresh = 1;
-        int scanSteps = 5;
-        int roundingMultiplier = 1000;
-
-        pd.INPUT_FILENAME = inputFastaFilename;
-        pd.OUTPUT_FILENAME = outputFilename;
-        pd.START_TIME = startTime;
-        pd.END_TIME = endTime;
-        pd.GA_ITER = GAIterLimit;
-        pd.GA_ALPHA = GARate;
-        pd.GA_DELTA = stepDelta;
-        pd.SKIP_OVERHANG = skipOverhangs;
-        pd.GA_GRADIENT_THRESHOLD = GAThresh;
-        pd.SCAN_STEPS = scanSteps;
-        pd.EXHAUSTIVE = exhaustive;
-        pd.ROUNDING_MULTIPLIER = roundingMultiplier;
-        pd.MODEL = new JTT();
-        pd.Run();
-    }
-
-
-    public static void main2(String args[]){
         //Create command line options
         Options options = new Options();
         options.addOption("i", "Input", true,           "Filename for the input fasta file");
         options.addOption("o", "Output", true,          "Filename for the results file");
-        options.addOption("st", "StartTime", false,     "Time to start search from, default 0");
-        options.addOption("et", "EndTime", false,       "Time to end search at, default 1");
-        options.addOption("iter", "GAIter", false,      "Max number of iterations for gradient ascent, default 1000");
-        options.addOption("gaa", "GAAlpha", false,      "Constant in gradient ascent function, default 0.01");
-        options.addOption("gad", "GADelta", false,      "Step size in gradient ascent, 0.01");
-        options.addOption("so" ,"SkipOverhangs", false, "Whether or not to skip alignment configurations that create " +
-                "                                       overhangs");
-        options.addOption("gat", "GATheshold", false,   "Threshold for ending a gradient ascent search, default 0.1");
-        options.addOption("ps", "Prescan", false,       "Number of steps/intervals in the prescan, default 5");
-        options.addOption("exhaustive", false,          "Perform an exhaustive search across all times, default false");
-        options.addOption("rm", "RoundingMulti", false, "Value for rounding time values to N decimal places, where" +
+        options.addOption("st", "StartTime", true,     "Time to start search from, default 0");
+        options.addOption("et", "EndTime", true,       "Time to end search at, default 1");
+        options.addOption("iter", "GAIter", true,      "Max number of iterations for gradient ascent, default 1000");
+        options.addOption("gaa", "GAAlpha", true,      "Constant in gradient ascent function, default 0.01");
+        options.addOption("gad", "GADelta", true,      "Step size in gradient ascent, 0.01");
+        options.addOption("so" ,"SkipOverhangs", true, "Whether or not to skip alignment configurations that create " +
+                                                        "overhangs");
+        options.addOption("gat", "GATheshold", true,   "Threshold for ending a gradient ascent search, default 0.1");
+        options.addOption("ps", "Prescan", true,       "Number of steps/intervals in the prescan, default 5");
+        options.addOption("exhaustive", true,          "Perform an exhaustive search across all times, default false");
+        options.addOption("rm", "RoundingMulti", true, "Value for rounding time values to N decimal places, where" +
                                                         "N is the number of 0's in multiplier (must be [10,1000, etc]" +
                                                         ", default 1000");
-        options.addOption("model", false,               "Evolutionary model to use, must be [JTT,LG,Dayhoff], " +
+        options.addOption("model", true,               "Evolutionary model to use, must be [JTT,LG,Dayhoff], " +
                                                         "default is JTT");
+        options.addOption("startseq", true,            "Nth sequence to start from, default 0");
 
         PairDistances pd = new PairDistances();
-
+//        System.out.println("args length = " + args.length);
+//        for (int i =0 ; i < args.length; i ++){
+//            System.out.println(args[i]);
+//        }
         //Construct parser for user supplied arguments
         CommandLineParser parser = new DefaultParser();
         try {
@@ -127,8 +97,7 @@ public class PairDistances {
             CommandLine line = parser.parse( options, args);
             pd.INPUT_FILENAME = line.getOptionValue("i");
             pd.OUTPUT_FILENAME = line.getOptionValue("o");
-            // validate that block-size has been set
-            if (line.hasOption( "st")) {
+            if (line.hasOption("st")) {
                 pd.START_TIME = Double.parseDouble(line.getOptionValue("st"));
                 if (pd.START_TIME < 0) throw new ParseException("Start time must >= 0");
             }
@@ -160,14 +129,20 @@ public class PairDistances {
                 pd.EXHAUSTIVE = Boolean.parseBoolean(line.getOptionValue("exhaustive"));
             }
             if (line.hasOption("rm")){
-                pd.ROUNDING_MULTIPLIER = Integer.parseInt(line.getOptionValue("exhaustive"));
+                pd.ROUNDING_MULTIPLIER = Integer.parseInt(line.getOptionValue("rm"));
             }
             if (line.hasOption("model")){
                 String choice = line.getOptionValue("model");
-                if (choice == "JTT") pd.MODEL = new JTT();
-                else if (choice == "LG") pd.MODEL = new LG();
-                else if (choice == "Dayhoff") pd.MODEL = new Dayhoff();
+                if (choice.equals("JTT")) pd.MODEL = new JTT();
+                else if (choice.equals("LG") )pd.MODEL = new LG();
+                else if (choice.equals("Dayhoff")) pd.MODEL = new Dayhoff();
                 else throw new ParseException("Unrecognised evolutionary model " +  choice);
+            }
+            if (line.hasOption("startseq")){
+                pd.START_SEQ = Integer.parseInt(line.getOptionValue("startseq"));
+            }
+            if (line.hasOption("endseq")){
+                pd.END_SEQ = Integer.parseInt(line.getOptionValue("endseq"));
             }
         }
         catch( ParseException exp ) {
@@ -175,7 +150,6 @@ public class PairDistances {
         }
         pd.Run();
     }
-
 
     /**
      * Run the program using the user supplied and/or default values.
@@ -185,12 +159,14 @@ public class PairDistances {
         this.computeMatrices(START_TIME, END_TIME, (int)END_TIME * ROUNDING_MULTIPLIER);
         //Load Sequences
         EnumSeq[] seqs = getFastaSeqs(INPUT_FILENAME);
+        if (this.END_SEQ == 0) this.END_SEQ = seqs.length;
         try {
             File file = new File(OUTPUT_FILENAME);
             FileWriter writer = new FileWriter(file);
             //Write header to output
             writer.write("Seq1\tSeq2\tTime\tLogLikelihood\tConfiguration\tS1Length\tS2Length\tS1Sequence\tS2Sequence\n");
-            for (int i = 0; i < seqs.length; i++) {
+            for (int i = START_SEQ; i < seqs.length; i++) {
+                if (i > END_SEQ) continue;
                 System.out.println(i);
                 EnumSeq s1 = seqs[i];
                 for (int j = 0; j <= i; j++) {
@@ -206,16 +182,6 @@ public class PairDistances {
                         result = new Object[]{0.0, config, score};
                     }
                     else {
-                        //************************
-//                        for (double t = 0.0; t <= 4; t += (4-0.0)/10){
-//                            for (int c =0; c < possibleConfigs(s1,s2); c++){
-//                                double temp = this.getSeqPairLL(longerSeq, shorterSeq, c, t);
-//                                String out = t + "\t" + c + "\t" + temp + "\t" + s1.getName() +"\t" + s2.getName() +
-//                                        "\t" + s1.length() + "\t" + s2.length();
-//                                System.out.println(out);
-////                                writer.write(out);
-//                            }
-//                        }
                         //robust scan
                         Set<Integer> likelyConfigs = identifyOptimalConfigs(longerSeq, shorterSeq);
                         Object[] bestResult = new Object[]{0.0, 0, -1000000000.0}; // (time, config, score)
@@ -341,14 +307,6 @@ public class PairDistances {
             gradient_t = (nextCost_t - cost)/delta_temp;
             temp_theta_t = time + GA_ALPHA * gradient_t;
         }
-//        System.out.println(longerSeq.getName() + "\t" +
-//                            shorterSeq.getName() + "\t" +
-//                            cost + "\t" +
-//                            nextCost_t + "\t" +
-//                            gradient_t + "\t" +
-//                            time + "\t" +
-//                            temp_theta_t + "\t" +
-//                            iterations);
         if(Math.abs(gradient_t) < GA_GRADIENT_THRESHOLD  || iterations == 0){
             return new Object[]{time, config, cost};
         }
