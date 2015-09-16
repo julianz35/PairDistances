@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -83,18 +84,21 @@ public class PairDistances {
                                                         ", default 1000");
         options.addOption("model", true,               "Evolutionary model to use, must be [JTT,LG,Dayhoff], " +
                                                         "default is JTT");
-        options.addOption("startseq", true,            "Nth sequence to start from, default 0");
+        options.addOption("startseq", true, "Nth sequence to start from, default 0");
+        options.addOption("endseq", true, "Nth sequence to end on from, default is length of input file");
 
         PairDistances pd = new PairDistances();
-//        System.out.println("args length = " + args.length);
-//        for (int i =0 ; i < args.length; i ++){
-//            System.out.println(args[i]);
-//        }
+        int argcnt = 0;
+        for (int i =0 ; i < args.length; i += 2){
+            System.out.println("Arg" + argcnt + "\t" + args[i] + "\t" + args[i + 1]);
+            argcnt += 1;
+        }
         //Construct parser for user supplied arguments
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine line = parser.parse( options, args);
+            List<String> parsedArgs = line.getArgList();
             pd.INPUT_FILENAME = line.getOptionValue("i");
             pd.OUTPUT_FILENAME = line.getOptionValue("o");
             if (line.hasOption("st")) {
@@ -167,7 +171,7 @@ public class PairDistances {
             writer.write("Seq1\tSeq2\tTime\tLogLikelihood\tConfiguration\tS1Length\tS2Length\tS1Sequence\tS2Sequence\n");
             for (int i = START_SEQ; i < seqs.length; i++) {
                 if (i > END_SEQ) continue;
-                System.out.println(i);
+//                System.out.println(i);
                 EnumSeq s1 = seqs[i];
                 for (int j = 0; j <= i; j++) {
                     Object[] result;
