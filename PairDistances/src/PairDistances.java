@@ -67,8 +67,8 @@ public class PairDistances {
     public static void main(String args[]){
         //Create command line options
         Options options = new Options();
-        options.addOption("i", "Input", true,           "Filename for the input fasta file");
-        options.addOption("o", "Output", true,          "Filename for the results file");
+        options.addOption("i", "Input", true,          "Filename for the input fasta file");
+        options.addOption("o", "Output", true,         "Filename for the results file");
         options.addOption("st", "StartTime", true,     "Time to start search from, default 0");
         options.addOption("et", "EndTime", true,       "Time to end search at, default 1");
         options.addOption("iter", "GAIter", true,      "Max number of iterations for gradient ascent, default 1000");
@@ -80,12 +80,12 @@ public class PairDistances {
         options.addOption("ps", "Prescan", true,       "Number of steps/intervals in the prescan, default 5");
         options.addOption("exhaustive", true,          "Perform an exhaustive search across all times, default false");
         options.addOption("rm", "RoundingMulti", true, "Value for rounding time values to N decimal places, where" +
-                                                        "N is the number of 0's in multiplier (must be [10,1000, etc]" +
-                                                        ", default 1000");
+                                                       "N is the number of 0's in multiplier (must be [10,1000, etc]" +
+                                                       ", default 1000");
         options.addOption("model", true,               "Evolutionary model to use, must be [JTT,LG,Dayhoff], " +
-                                                        "default is JTT");
-        options.addOption("startseq", true, "Nth sequence to start from, default 0");
-        options.addOption("endseq", true, "Nth sequence to end on from, default is length of input file");
+                                                       "default is JTT");
+        options.addOption("startseq", true,            "Nth sequence to start from, default 0");
+        options.addOption("endseq", true,              "Nth sequence to end on, default is length of input file");
 
         PairDistances pd = new PairDistances();
         int argcnt = 0;
@@ -171,7 +171,6 @@ public class PairDistances {
             writer.write("Seq1\tSeq2\tTime\tLogLikelihood\tConfiguration\tS1Length\tS2Length\tS1Sequence\tS2Sequence\n");
             for (int i = START_SEQ; i < seqs.length; i++) {
                 if (i > END_SEQ) continue;
-//                System.out.println(i);
                 EnumSeq s1 = seqs[i];
                 for (int j = 0; j <= i; j++) {
                     Object[] result;
@@ -320,13 +319,6 @@ public class PairDistances {
         }
     }
 
-    @Deprecated
-    public double GASeqPairLL(EnumSeq longerSeq, EnumSeq shorterSeq, double time_normed, int config){
-        double time_orig = reverseMeanNormalise(time_normed, START_TIME, END_TIME);
-        //For each configuration (assumed already
-        return getSeqPairLL(longerSeq, shorterSeq, time_orig, config);
-    }
-
     /**
      * Returns the log-likelihood score for the alignment of a pair of sequences at a specified alignment configuration
      * and time. Used primarily in {@see PairDistances#gradientAscent} as a cost function.
@@ -418,27 +410,6 @@ public class PairDistances {
             if (!rateMatrices.containsKey(roundedTime))
                 rateMatrices.put(roundedTime, MODEL.getProbs(roundedTime));
         }
-    }
-
-    @Deprecated
-    /**
-     * Return mean normalised version of a value (in our case, the mean is just the (max-min/2)
-     * @param value
-     * @param rangeMin
-     * @param rangeMax
-     * @return
-     */
-    public double meanNormalise(double value, double rangeMin, double rangeMax){
-        double range = rangeMax - rangeMin;
-//        return value/(rangeMax);
-        return (value - range/2)/(range);
-    }
-
-    @Deprecated
-    public double reverseMeanNormalise(double value, double rangeMin, double rangeMax){
-        double range = rangeMax - rangeMin;
-//        return value * rangeMax;
-        return value * range + range/2;
     }
 
     /**
