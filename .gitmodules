@@ -1,0 +1,3 @@
+[submodule "bnkit"]
+	path = bnkit
+	url = https://github.com/bodenlab/bnkit
