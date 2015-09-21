@@ -13,6 +13,7 @@ import dat.Enumerable;
 import dat.file.FastaReader;
 import org.apache.commons.cli.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -97,8 +98,7 @@ public class PairDistances {
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
-            CommandLine line = parser.parse( options, args);
-            List<String> parsedArgs = line.getArgList();
+            CommandLine line = parser.parse(options, args);
             pd.INPUT_FILENAME = line.getOptionValue("i");
             pd.OUTPUT_FILENAME = line.getOptionValue("o");
             if (line.hasOption("st")) {
@@ -166,7 +166,8 @@ public class PairDistances {
         if (this.END_SEQ == 0) this.END_SEQ = seqs.length;
         try {
             File file = new File(OUTPUT_FILENAME);
-            FileWriter writer = new FileWriter(file);
+            FileWriter writer = new FileWriter(file, true);
+            BufferedWriter bw = new BufferedWriter(writer);
             //Write header to output
             writer.write("Seq1\tSeq2\tTime\tLogLikelihood\tConfiguration\tS1Length\tS2Length\tS1Sequence\tS2Sequence\n");
             for (int i = START_SEQ; i < seqs.length; i++) {
@@ -218,9 +219,9 @@ public class PairDistances {
                     String result_string = s1.getName() + "\t" + s2.getName() + "\t" + result[0] + "\t" + result[2] +
                             "\t" + result[1] + "\t" + s1.length() + "\t" + s2.length() +
                             "\t" + s1.toString() + "\t" + s2.toString() + "\n";
-                    writer.write(result_string); //Write output to file
-                    writer.flush(); //flush the writer to keep file up to date (to avoid partial writes)
+                    bw.write(result_string); //Write output to file
                 }
+                bw.flush(); //flush the writer to keep file up to date (to avoid partial writes)
             }
             writer.close();
         } catch (IOException e) {
