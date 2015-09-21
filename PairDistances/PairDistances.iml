@@ -26,6 +26,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="bnkit" />
   </component>
 </module>
-
