@@ -88,6 +88,8 @@ public class PairDistances {
         options.addOption("startseq", true,            "Nth sequence to start from, default 0");
         options.addOption("endseq", true,              "Nth sequence to end on, default is length of input file");
 
+        options.getOption("i").setRequired(true);
+        options.getOption("o").setRequired(true);
         PairDistances pd = new PairDistances();
         int argcnt = 0;
         for (int i =0 ; i < args.length; i += 2){
