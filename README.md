@@ -1,7 +1,4 @@
 # PairDistances
-####To Do
-* complete Readme
-* Provide option for output format, i.e., PHYLIP formatted distance matrix vs current tab-delimited output
 
 PairDistances contains code for performing pairwise alignment of protein sequences. We avoid the use of an affine gap penalty by simply not inserting gaps. We find the most-likely alignment configuration and evolutionary time between each pair of sequences using a Markov Process approach (see Thorne - ``An Evolutionary model for Maximum Likelihood Alignment of DNA Sequences'').
 
@@ -19,4 +16,4 @@ The user simply needs to provide a FASTA file for the sequences in which they wh
 | P25555 | P21538 | 1.1278615505309812 | -30.37755252356034 | 5.0 | 7 | 4 | PVRRRLS | KKRK |
 
 
-
+There are a variety of input parameters that the user can provide to improve both the efficiency and accuracy of the pairwise alignment search. Details of which will be added here in the future, but in the mean time, look in the PairDistances.java file.
